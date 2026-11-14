@@ -1,0 +1,9 @@
+---
+htmd: "0.1"
+id: "mem://hypotheses/sensor-latency"
+type: "hypothesis"
+---
+
+# Sensor response-time hypothesis
+
+Changing the sensor polling interval may improve response time. This is unverified and requires measurements.

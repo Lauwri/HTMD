@@ -1,0 +1,10 @@
+---
+htmd: "0.1"
+id: "res://examples/sensor"
+type: "component"
+title: "Sensor module"
+---
+
+# Sensor module
+
+A replaceable sensor module used by [[res://examples/device|the device]].

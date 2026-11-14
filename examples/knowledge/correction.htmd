@@ -1,0 +1,15 @@
+---
+htmd: "0.1"
+id: "mem://events/2026-11-14-device-test-correction"
+type: "event"
+actor: "res://actors/operator"
+occurred_at: "2026-11-14T09:00:00Z"
+recorded_at: "2026-11-14T09:01:00Z"
+corrects: "mem://events/2026-11-14-device-test"
+---
+
+# Correction
+
+The start time reported in the original event was mistaken. The verified start time was 08:05 UTC.
+
+The original record remains preserved, and this document links to it as a correction.

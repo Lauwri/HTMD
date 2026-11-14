@@ -1,0 +1,18 @@
+---
+htmd: "0.1"
+id: "res://views/device-panel"
+type: "note"
+title: "Device panel"
+---
+
+# Simple device navigation
+
+A safe declarative view is not a full HTML web application.
+
+<view id="device-panel" name="Device panel">
+  <section>
+    <h2>Device assembly</h2>
+    <p>View the device and its components.</p>
+    <button data-action="open" data-ref="res://examples/device">Open device</button>
+  </section>
+</view>

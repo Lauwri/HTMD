@@ -1,0 +1,390 @@
+[
+  {
+    "id": "core-anonymous",
+    "profile": "core",
+    "description": "Anonymous Markdown has defaults",
+    "source": "# Hello\n\nPlain *Markdown*.\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "note"
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "core-relation",
+    "profile": "core",
+    "description": "A document owns its outbound relation",
+    "source": "---\nhtmd: \"0.1\"\nid: \"res://examples/device\"\ntype: \"component\"\n---\n\n# Device\n\n<relation type=\"contains\" to=\"res://examples/sensor\" />\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "component",
+        "id": "res://examples/device"
+      },
+      "references": [],
+      "relations": [
+        {
+          "from": "res://examples/device",
+          "type": "contains",
+          "to": "res://examples/sensor",
+          "status": "asserted",
+          "line": 9
+        }
+      ]
+    }
+  },
+  {
+    "id": "core-inline-link",
+    "profile": "core",
+    "description": "Labeled inline graph link",
+    "source": "See [[res://examples/sensor|sensor]].\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "note"
+      },
+      "references": [
+        {
+          "kind": "link",
+          "target": "res://examples/sensor",
+          "label": "sensor",
+          "line": 1
+        }
+      ],
+      "relations": []
+    }
+  },
+  {
+    "id": "core-dependencies",
+    "profile": "core",
+    "description": "Context, skill and tool are inert references",
+    "source": "<context ref=\"mem://user/preferences\" mode=\"summary\" />\n<skill ref=\"skill://research/core\" />\n<tool ref=\"tool://browser/search\" name=\"Search\" />\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "note"
+      },
+      "references": [
+        {
+          "kind": "context",
+          "target": "mem://user/preferences",
+          "mode": "summary",
+          "line": 1
+        },
+        {
+          "kind": "skill",
+          "target": "skill://research/core",
+          "line": 2
+        },
+        {
+          "kind": "tool",
+          "target": "tool://browser/search",
+          "name": "Search",
+          "line": 3
+        }
+      ],
+      "relations": []
+    }
+  },
+  {
+    "id": "core-local-file",
+    "profile": "core",
+    "description": "Local source reference is permitted",
+    "source": "<resource src=\"./assets/device.svg\" name=\"Diagram\" />\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "note"
+      },
+      "references": [
+        {
+          "kind": "resource",
+          "target": "./assets/device.svg",
+          "name": "Diagram",
+          "line": 1
+        }
+      ],
+      "relations": []
+    }
+  },
+  {
+    "id": "core-multiline",
+    "profile": "core",
+    "description": "Multiline directive attributes",
+    "source": "---\nhtmd: \"0.1\"\nid: \"res://examples/controller\"\n---\n\n<relation\n  type=\"reports-to\"\n  to=\"res://examples/sensor\"\n  status=\"inferred\"\n/>\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "note",
+        "id": "res://examples/controller"
+      },
+      "references": [],
+      "relations": [
+        {
+          "from": "res://examples/controller",
+          "type": "reports-to",
+          "to": "res://examples/sensor",
+          "status": "inferred",
+          "line": 6
+        }
+      ]
+    }
+  },
+  {
+    "id": "core-code-is-inert",
+    "profile": "core",
+    "description": "Code fence does not create a directive",
+    "source": "```htmd\n<tool ref=\"tool://browser/search\" />\n```\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "note"
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "core-fact",
+    "profile": "core",
+    "description": "Facts need evidence",
+    "source": "---\nhtmd: \"0.1\"\nid: \"mem://facts/one\"\ntype: \"fact\"\nevidence:\n  - \"res://documents/report\"\n---\n\nA sourced assertion.\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "fact",
+        "id": "mem://facts/one",
+        "evidence": [
+          "res://documents/report"
+        ]
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "core-event",
+    "profile": "core",
+    "description": "Historical event with timestamps",
+    "source": "---\nhtmd: \"0.1\"\nid: \"mem://events/one\"\ntype: \"event\"\nactor: \"res://actors/owner\"\noccurred_at: \"2026-11-14T08:00:00Z\"\nrecorded_at: \"2026-11-14T08:01:00Z\"\n---\n\nAn event.\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "event",
+        "id": "mem://events/one",
+        "actor": "res://actors/owner",
+        "occurred_at": "2026-11-14T08:00:00Z",
+        "recorded_at": "2026-11-14T08:01:00Z"
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "core-correction",
+    "profile": "core",
+    "description": "Correction points to prior event",
+    "source": "---\nhtmd: \"0.1\"\nid: \"mem://events/two\"\ntype: \"event\"\nactor: \"res://actors/owner\"\noccurred_at: \"2026-11-14T09:00:00Z\"\nrecorded_at: \"2026-11-14T09:00:05Z\"\ncorrects: \"mem://events/one\"\n---\n\nCorrection.\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "event",
+        "id": "mem://events/two",
+        "actor": "res://actors/owner",
+        "occurred_at": "2026-11-14T09:00:00Z",
+        "recorded_at": "2026-11-14T09:00:05Z",
+        "corrects": "mem://events/one"
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "core-unknown-relation",
+    "profile": "core",
+    "description": "Unknown relation predicate is preserved",
+    "source": "---\nhtmd: \"0.1\"\nid: \"res://examples/device\"\n---\n<relation type=\"mounted-next-to\" to=\"res://examples/controller\" />\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "note",
+        "id": "res://examples/device"
+      },
+      "references": [],
+      "relations": [
+        {
+          "from": "res://examples/device",
+          "type": "mounted-next-to",
+          "to": "res://examples/controller",
+          "status": "asserted",
+          "line": 5
+        }
+      ]
+    }
+  },
+  {
+    "id": "view-valid",
+    "profile": "view",
+    "description": "Safe view with open navigation",
+    "source": "<view id=\"device-panel\">\n  <section><button data-action=\"open\" data-ref=\"res://examples/device\">Open</button></section>\n</view>\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "note"
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "core-bad-version",
+    "profile": "core",
+    "description": "Unsupported source language version",
+    "source": "---\nhtmd: \"9.0\"\n---\n# Title\n",
+    "valid": false,
+    "error": "E_VERSION"
+  },
+  {
+    "id": "core-duplicate-key",
+    "profile": "core",
+    "description": "Repeated frontmatter key",
+    "source": "---\nhtmd: \"0.1\"\nid: \"res://examples/device\"\nid: \"res://examples/sensor\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "core-implicit-yaml-scalar",
+    "profile": "core",
+    "description": "Unquoted scalar is forbidden",
+    "source": "---\nhtmd: \"0.1\"\ntype: fact\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "core-bad-type",
+    "profile": "core",
+    "description": "Fact without source evidence",
+    "source": "---\nhtmd: \"0.1\"\nid: \"mem://facts/one\"\ntype: \"fact\"\n---\n",
+    "valid": false,
+    "error": "E_TYPE"
+  },
+  {
+    "id": "core-event-fields",
+    "profile": "core",
+    "description": "Event requires actor and both timestamps",
+    "source": "---\nhtmd: \"0.1\"\nid: \"mem://events/one\"\ntype: \"event\"\n---\n",
+    "valid": false,
+    "error": "E_TYPE"
+  },
+  {
+    "id": "core-incorrect-scheme",
+    "profile": "core",
+    "description": "Context needs a memory or resource ID",
+    "source": "<context ref=\"tool://browser/search\" />\n",
+    "valid": false,
+    "error": "E_URI"
+  },
+  {
+    "id": "core-tool-source",
+    "profile": "core",
+    "description": "Tool script paths are invalid",
+    "source": "<tool src=\"./browser.py\" />\n",
+    "valid": false,
+    "error": "E_DIRECTIVE"
+  },
+  {
+    "id": "core-relation-source",
+    "profile": "core",
+    "description": "Anonymous document cannot implicitly originate a relation",
+    "source": "<relation type=\"contains\" to=\"res://examples/sensor\" />\n",
+    "valid": false,
+    "error": "E_RELATION_SOURCE"
+  },
+  {
+    "id": "core-path-traversal",
+    "profile": "core",
+    "description": "Source path cannot escape root",
+    "source": "<resource src=\"./assets/../secrets.txt\" />\n",
+    "valid": false,
+    "error": "E_SOURCE_PATH"
+  },
+  {
+    "id": "core-malformed-attr",
+    "profile": "core",
+    "description": "Semantic attributes must be quoted",
+    "source": "<resource ref=res://examples/device />\n",
+    "valid": false,
+    "error": "E_DIRECTIVE"
+  },
+  {
+    "id": "core-malformed-link",
+    "profile": "core",
+    "description": "Graph links need logical URIs",
+    "source": "Read [[examples/device]].\n",
+    "valid": false,
+    "error": "E_LINK"
+  },
+  {
+    "id": "core-invalid-uri",
+    "profile": "core",
+    "description": "Logical ID path cannot contain ..",
+    "source": "<resource ref=\"res://examples/../secrets\" />\n",
+    "valid": false,
+    "error": "E_URI"
+  },
+  {
+    "id": "core-unknown-attribute",
+    "profile": "core",
+    "description": "Known directive rejects unknown attributes",
+    "source": "<context ref=\"mem://user/preferences\" execute=\"yes\" />\n",
+    "valid": false,
+    "error": "E_DIRECTIVE"
+  },
+  {
+    "id": "view-script",
+    "profile": "view",
+    "description": "Scripts in a view are invalid",
+    "source": "<view>\n  <script>alert(1)</script>\n</view>\n",
+    "valid": false,
+    "error": "E_VIEW"
+  },
+  {
+    "id": "view-handler",
+    "profile": "view",
+    "description": "Event handlers in views are invalid",
+    "source": "<view>\n  <button onclick=\"steal()\">Go</button>\n</view>\n",
+    "valid": false,
+    "error": "E_VIEW"
+  },
+  {
+    "id": "view-tool-action",
+    "profile": "view",
+    "description": "Only open navigation is allowed",
+    "source": "<view>\n  <button data-action=\"execute\" data-ref=\"tool://browser/search\">Run</button>\n</view>\n",
+    "valid": false,
+    "error": "E_VIEW"
+  },
+  {
+    "id": "view-unsafe-href",
+    "profile": "view",
+    "description": "Javascript URLs forbidden",
+    "source": "<view>\n  <a href=\"javascript:alert(1)\">Bad</a>\n</view>\n",
+    "valid": false,
+    "error": "E_VIEW"
+  }
+]

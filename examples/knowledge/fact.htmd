@@ -1,0 +1,14 @@
+---
+htmd: "0.1"
+id: "mem://facts/device-requirements"
+type: "fact"
+title: "Device requirement source"
+evidence:
+  - "res://documents/requirements-v1"
+---
+
+# Sourced requirement
+
+A requirement is recorded in [[res://documents/requirements-v1]].
+
+This is an **assertion attributed to evidence**, not a guarantee that the requirement remains current.

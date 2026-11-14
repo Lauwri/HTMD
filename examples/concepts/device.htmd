@@ -1,0 +1,16 @@
+---
+htmd: "0.1"
+id: "res://examples/device"
+type: "component"
+title: "Device assembly"
+workspace: "example-workspace"
+---
+
+# Device assembly
+
+A modular device containing a replaceable [[res://examples/sensor|sensor module]].
+
+<context ref="mem://examples/requirements" mode="summary" />
+<resource ref="res://examples/sensor" name="Sensor module" />
+<relation type="contains" to="res://examples/sensor" />
+<relation type="depends-on" to="res://examples/controller" status="hypothetical" />
