@@ -53,6 +53,72 @@ bad("view-handler", "Event handlers in views are invalid", '<view>\n  <button on
 bad("view-tool-action", "Only open navigation is allowed", '<view>\n  <button data-action="execute" data-ref="tool://browser/search">Run</button>\n</view>\n', "E_VIEW", "view")
 bad("view-unsafe-href", "Javascript URLs forbidden", '<view>\n  <a href="javascript:alert(1)">Bad</a>\n</view>\n', "E_VIEW", "view")
 
+# Exercise existing identified documents and their body locations under 0.2 too.
+for case in list(CASES):
+    if case["valid"] and 'htmd: "0.1"' in case["source"]:
+        expected = case["expected"]
+        good(case["id"] + "-0.2", case["description"] + " (0.2)",
+             case["source"].replace('htmd: "0.1"', 'htmd: "0.2"'),
+             {**expected["metadata"], "htmd": "0.2"},
+             expected["references"], expected["relations"], case["profile"])
+
+# Versioned metadata: keep the original 0.1 vectors unchanged.
+for version in ("0.1", "0.2"):
+    prefix = f'---\nhtmd: "{version}"\n'
+    good(f"metadata-{version}-extensions", "Existing x-* strings and arrays remain passive",
+         prefix + 'x-name: "device"\nx-tags:\n  - "one"\n  - "two"\nx-: "legacy key"\n---\n',
+         {"htmd": version, "x-name": "device", "x-tags": ["one", "two"], "x-": "legacy key"})
+    good(f"metadata-{version}-organization", "Organization labels are descriptive",
+         prefix + 'workspace: "lab"\nproject: "inventory"\n---\n',
+         {"htmd": version, "workspace": "lab", "project": "inventory"})
+    for name, fields in {
+        "duplicate-reserved": 'title: "one"\ntitle: "two"\n',
+        "duplicate-extension": 'x-tags: "one"\nx-tags: "two"\n',
+        "nested-map": 'x-data:\n  nested: "no"\n',
+        "flow-array": 'x-data: ["one", "two"]\n',
+        "bad-array-indent": 'x-data:\n - "one"\n',
+        "nested-array": 'x-data:\n  - ["one"]\n',
+        "empty-array": 'x-data:\n',
+        "boolean": 'x-data: true\n',
+        "number": 'x-data: 42\n',
+        "null": 'x-data: null\n',
+        "reserved-array": 'title:\n  - "invalid"\n',
+        "evidence-string": 'evidence: "res://docs/report"\n',
+        "invalid-key": 'Bad-key: "invalid"\n',
+    }.items():
+        bad(f"metadata-{version}-{name}", "Restricted metadata grammar remains enforced",
+            prefix + fields + '---\n', "E_FRONTMATTER")
+    bad(f"metadata-{version}-fact-evidence", "Facts still require evidence",
+        prefix + 'id: "mem://facts/one"\ntype: "fact"\n---\n', "E_TYPE")
+
+custom_fields = ('manufacturer: "Example Electronics"\nlocation: "building-a"\n'
+                 'priority: "high"\ntags:\n  - "hardware"\n  - "temperature"\n'
+                 'owners:\n  - "operations"\nworkspace:\n  - "lab"\nproject:\n  - "inventory"\n')
+good("metadata-0.2-custom", "Multiple custom string arrays, even before version declaration",
+     '---\n' + custom_fields + 'htmd: "0.2"\n---\n',
+     {"htmd": "0.2", "manufacturer": "Example Electronics", "location": "building-a",
+      "priority": "high", "tags": ["hardware", "temperature"], "owners": ["operations"],
+      "workspace": ["lab"], "project": ["inventory"]})
+good("metadata-0.2-inert", "HTML, expressions and tool references in metadata are only strings",
+     '---\nhtmd: "0.2"\nhtml: "<script>alert(1)</script>"\n'
+     'tool: "tool://browser/search"\nexpression: "${run()}"\n'
+     'reference: "[[res://private/secret]]"\npermissions:\n  - "admin"\n---\n',
+     {"htmd": "0.2", "html": "<script>alert(1)</script>", "tool": "tool://browser/search",
+      "expression": "${run()}", "reference": "[[res://private/secret]]", "permissions": ["admin"]})
+for name, fields in {
+    "custom": 'manufacturer: "Example Electronics"\n',
+    "workspace-array": 'workspace:\n  - "lab"\n',
+    "project-array": 'project:\n  - "inventory"\n',
+}.items():
+    bad(f"metadata-0.1-{name}", "0.1 retains its original metadata restrictions",
+        '---\n' + fields + 'htmd: "0.1"\n---\n', "E_FRONTMATTER")
+bad("metadata-0.2-duplicate-custom", "Custom key duplicates are rejected",
+    '---\nhtmd: "0.2"\npriority: "high"\npriority: "low"\n---\n', "E_FRONTMATTER")
+bad("metadata-missing-version", "Custom fields cannot imply a language version",
+    '---\npriority: "high"\n---\n', "E_VERSION")
+bad("metadata-unsupported-version", "Custom fields cannot select a supported fallback",
+    '---\npriority: "high"\nhtmd: "0.3"\n---\n', "E_VERSION")
+
 p=Path(__file__).resolve().parent.parent / 'conformance/cases.json'
 p.write_text(json.dumps(CASES,indent=2,ensure_ascii=False) + '\n', encoding='utf-8')
 print(f'Wrote {len(CASES)} conformance cases to {p}')

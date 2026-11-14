@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "htmd-language"
+version = "0.2.0a1"
+description = "HTMD 0.1/0.2 parser, safe renderer and read-only resolver"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+dependencies = ["markdown-it-py>=3,<5", "PyYAML>=6,<7"]
+
+[project.optional-dependencies]
+test = ["pytest>=8", "jsonschema>=4"]
+
+[project.scripts]
+htmd = "htmd.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -7,7 +7,7 @@ HTMD is an open **draft specification**. Constructive issues and pull requests a
 1. State the use case and problem with the current grammar.
 2. Provide minimal source examples: valid and invalid.
 3. Specify exact normative behavior, error handling and security impact.
-4. Explain how existing 0.1 documents and readers would behave.
+4. Explain how existing 0.1 and 0.2 documents and readers would behave.
 5. Add positive and negative conformance cases to `conformance/cases.json`.
 6. Update the specification first, then the examples and informative documents.
 

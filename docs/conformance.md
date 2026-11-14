@@ -11,7 +11,7 @@ The [language specification](../SPECIFICATION.md) is normative. [`conformance/ca
 
 ## Vector format
 
-Each case provides `id`, `profile`, `description`, `source`, `valid` and either `expected` semantic extraction or `error` diagnostic. Positive `expected` contains `metadata`, `references`, `relations`; an implementation may internally use a different AST, but must expose the equivalent data for comparison. The line numbers in positive cases are 1-based. `metadata` means the *effective* metadata, including defaults (`htmd="0.1"`, `type="note"`). View cases describe validation only; visual rendering is not standardized by exact pixel output.
+Each case provides `id`, `profile`, `description`, `source`, `valid` and either `expected` semantic extraction or `error` diagnostic. Positive `expected` contains `metadata`, `references`, `relations`; an implementation may internally use a different AST, but must expose the equivalent data for comparison. The line numbers in positive cases are 1-based. `metadata` means the *effective* metadata, including the declared version and default `type="note"`; only absent frontmatter supplies the implicit `htmd="0.1"`. View cases describe validation only; visual rendering is not standardized by exact pixel output.
 
 Failure vectors require the error code but permit implementation-specific wording and additional diagnostics. An invalid input must not be silently treated as an executable tool call. A test suite should also include a broad CommonMark 0.31.2 conformance run.
 
@@ -31,3 +31,9 @@ Failure vectors require the error code but permit implementation-specific wordin
 ## Implementation reporting
 
 An implementation should publish a matrix of supported profiles, passing vectors, CommonMark suite results, security boundaries, limitations, and version. Avoid claiming complete conformance based solely on the repository self-check.
+
+## Python reference implementation (alpha)
+
+Install with `python3 -m pip install -e '.[test]'`, then run `python3 -m pytest -q`. The suite runs all published test vectors for 0.1 and 0.2 against an actual parser and validates positive results against the published interchange JSON Schema. Versioned metadata cases cover arbitrary custom keys, legacy extensions, string arrays, malformed values, duplicates, reserved types, and passive script/tool strings. Schema checks include mismatched projection versions and invalid metadata, and runtime regressions verify unchanged rendering and authorization. It also checks CLI behavior, View allowlist rules, escaping, traversal rejection, inert tool tags, and resolver permissions.
+
+`htmd validate --profile view examples/` validates each example. This is a **tested implementation**, not evidence of full CommonMark 0.31.2 conformance, a security audit, a browser runtime, or event-integrity persistence.

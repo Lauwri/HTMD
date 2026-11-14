@@ -12,9 +12,15 @@ This document is informative. The [specification](../SPECIFICATION.md) governs c
 | URI-shaped identifiers | Stable, recognizable namespaces | Private schemes are not registered network protocols |
 | No executable syntax | Prevent prompt-injection and scripting via knowledge | Workflows require host runtime APIs |
 | Small View allowlist | Reasonable default for safe UI previews | Cannot replace a full application framework |
+| Open custom metadata in 0.2 | Keep the language independent of application organization | Applications must agree on their own field meanings |
+| Version-specific metadata validation | Preserve 0.1 readers and documents without silent reinterpretation | Producers explicitly opt into 0.2 |
 | Strict double-quoted frontmatter | Avoid YAML implicit typing surprises | Less flexible than full YAML |
 | Append-only historical events | Preserve truthful records and corrections | Requires a real persistence policy |
 | Transport independence | Works offline and across devices | Sync design belongs to the host implementation |
+
+## Why are workspace and project custom fields?
+
+HTMD defines how information is represented, identified, and connected. Applications determine how it is organized and used. Only the universal fields in [§3.1](../SPECIFICATION.md#31-metadata-grammar-and-constraints) are reserved in 0.2; adding a future reserved name requires an explicit specification change. Custom metadata stays passive, including names that resemble permissions or parser settings. Removing the `x-` requirement does not add a YAML object model or an execution mechanism.
 
 ## Why not embed a JavaScript/TypeScript execution language?
 

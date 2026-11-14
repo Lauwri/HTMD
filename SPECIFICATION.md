@@ -1,8 +1,8 @@
-# HTMD 0.1 — Language Specification
+# HTMD 0.2 — Language Specification
 
-**Status:** Public draft · **Version:** 0.1.0-draft · **Date:** 2026-11-14
+**Status:** Public draft · **Version:** 0.2.0-draft · **Date:** 2026-11-14
 
-This document is the **normative** definition of HTMD 0.1. Other material in this repository is explanatory unless expressly identified as normative. HTMD is a proposed language, not an approved international standard or a completed implementation.
+This document is the **normative** definition of HTMD 0.2, including compatibility rules for HTMD 0.1. Unless explicitly version-specific, the rules apply to both versions. Other material in this repository is explanatory unless expressly identified as normative. HTMD is a proposed language, not an approved international standard or a completed implementation.
 
 ## 1. Scope
 
@@ -10,7 +10,7 @@ HTMD (HyperText Markdown) is a UTF-8 text format combining CommonMark, semantic 
 
 HTMD defines *representation*, not the engine that executes tools or manages databases. No HTMD document can authorize a tool invocation or elevate its own privileges.
 
-A file has the extension `.htmd`; an HTMD renderer **MAY** produce `.html`, native UI, or a machine-readable interchange representation. Renaming a `.htmd` file to `.html` is **NOT** a valid conversion. HTMD 0.1 has no registered media type; when a transfer needs one, producers SHOULD use `text/plain; charset=utf-8` rather than claiming `text/html` or an unregistered standardized HTMD MIME type.
+A file has the extension `.htmd`; an HTMD renderer **MAY** produce `.html`, native UI, or a machine-readable interchange representation. Renaming a `.htmd` file to `.html` is **NOT** a valid conversion. HTMD has no registered media type; when a transfer needs one, producers SHOULD use `text/plain; charset=utf-8` rather than claiming `text/html` or an unregistered standardized HTMD MIME type.
 
 ### 1.1 Normative terms
 
@@ -18,11 +18,11 @@ A file has the extension `.htmd`; an HTMD renderer **MAY** produce `.html`, nati
 
 ### 1.2 Profiles
 
-- **HTMD-Core**: mandatory for an HTMD 0.1 conforming parser. Frontmatter, Markdown, semantic directives, links, and relation extraction.
+- **HTMD-Core**: mandatory for an HTMD conforming parser. Frontmatter, Markdown, semantic directives, links, and relation extraction.
 - **HTMD-View**: optional. Recognizes `<view>` fragments and their allowed HTML/actions. A Core-only parser MUST preserve unrenderable view content as an opaque block and MUST NOT execute it.
 - **HTMD-Resolver**: optional. Resolves logical references, subject to the runtime's policies.
 
-A producer **MUST NOT** assume that a reader supports optional profiles. Profile capability discovery is outside v0.1; an application **MAY** report the supported profiles out of band.
+A producer **MUST NOT** assume that a reader supports optional profiles. Profile capability discovery is outside versions 0.1 and 0.2; an application **MAY** report the supported profiles out of band.
 
 ## 2. Encoding, input and lexical precedence
 
@@ -43,33 +43,46 @@ A document **MAY** begin with a restricted YAML 1.2-compatible metadata mapping:
 
 ```yaml
 ---
-htmd: "0.1"
+htmd: "0.2"
 id: "res://examples/device"
 type: "component"
 title: "Device assembly"
-workspace: "example-workspace"
+manufacturer: "Example Electronics"
+location: "building-a"
+priority: "high"
+tags:
+  - "hardware"
+  - "temperature"
 ---
 ```
 
 ### 3.1 Metadata grammar and constraints
 
-For Core, the frontmatter is a restricted mapping: ASCII key names matching `[a-z][a-z0-9_-]*`, with **double-quoted string** values or sequences of double-quoted strings (YAML block sequence, one per line). All string values MUST be decoded using YAML 1.2 double-quoted-string rules. Blank lines and `#` full-line comments are permitted. Nested mappings, arbitrary scalar types, anchors, aliases, explicit tags, merge keys, duplicate keys, tabs for indentation, and multiple YAML documents are prohibited. String arrays MUST use a `- ` list at exactly two spaces of indentation after the top-level key. For interoperability, all metadata values are strings or arrays of strings. Unknown keys **MUST** start with `x-`; a parser **MUST** preserve unknown `x-` values without executing or interpreting them.
+For Core, the frontmatter is a restricted mapping: ASCII key names matching `[a-z][a-z0-9_-]*`, with **double-quoted string** values or sequences of double-quoted strings (YAML block sequence, one per line). All string values MUST be decoded using YAML 1.2 double-quoted-string rules. Blank lines and `#` full-line comments are permitted. Nested mappings, arbitrary scalar types, anchors, aliases, explicit tags, merge keys, duplicate keys, tabs for indentation, and multiple YAML documents are prohibited. String arrays MUST be nonempty and use a `- ` list at exactly two spaces of indentation after the top-level key; flow arrays such as `["one"]` are prohibited. For interoperability, all metadata values are strings or arrays of strings. In 0.2, any key matching the key grammar is allowed. A parser **MUST** preserve custom keys and their decoded values, including array order, without executing or interpreting them. No `x-` prefix is required; existing `x-*` keys remain valid.
 
-If frontmatter exists, `htmd: "0.1"` **MUST** be present. Absent frontmatter means an anonymous HTMD document with an implicit `htmd` value of `"0.1"` and `type` value `"note"`. A declared unsupported major/minor version **MUST** produce `E_VERSION` rather than silently choosing another grammar.
+If frontmatter exists, `htmd: "0.1"` or `htmd: "0.2"` **MUST** be present. The declared version selects metadata validation regardless of the position of the `htmd` key. Absent frontmatter means an anonymous HTMD document with an implicit `htmd` value of `"0.1"` and `type` value `"note"`. A declared unsupported major/minor version **MUST** produce `E_VERSION` rather than silently choosing another grammar. Malformed 0.1 documents **MUST NOT** be retried or reinterpreted as 0.2.
+
+The following are the **only reserved metadata fields in 0.2**:
 
 | Field | Type | Rule |
 | --- | --- | --- |
-| `htmd` | string | Required if frontmatter exists; exactly `"0.1"` |
+| `htmd` | string | Required if frontmatter exists; `"0.1"` or `"0.2"` |
 | `id` | URI string | Optional unless required by document type or relation |
 | `type` | string | Optional; default `note`; see §3.2 |
 | `title` | string | Optional human title |
-| `workspace`, `project` | string | Optional opaque names; not authorization grants |
 | `actor` | URI string | Source/author attribution; required for `event` |
 | `occurred_at` | string | RFC 3339 timestamp; required for `event` |
 | `recorded_at` | string | RFC 3339 timestamp; required for `event` |
 | `evidence` | list of URI strings | Required and nonempty for `fact` |
 | `corrects` | URI string | References an earlier historical `event`; correction only |
-| `x-*` | string or list of strings | Implementation-specific passive metadata |
+
+Reserved names always retain their specified types and semantics. A custom field cannot shadow, redefine, or relax a reserved field; an invalid reserved value remains an error. Any repeated key, reserved or custom, is `E_FRONTMATTER`; there is no first/last-value-wins behavior.
+
+`workspace` and `project` are ordinary custom fields in 0.2, with string or string-array values. Neither these names nor any other custom field changes identity, reference resolution, parser options, profiles, permissions, or tool behavior. HTML, script-like text, expressions, paths, and tool URIs inside custom values are inert strings, not markup, expressions to evaluate, or semantic references. Applications may interpret metadata under their own explicit policies but **MUST NOT** derive authorization from document-supplied values.
+
+**0.1 compatibility:** the reserved-field validations above still apply. In addition, 0.1 accepts `workspace` and `project` only as opaque strings, and every other non-reserved key **MUST** start with `x-`. These legacy exceptions do not reserve application-specific names in 0.2. All other metadata grammar and type-specific requirements are unchanged.
+
+Only an explicit specification change may reserve additional names; implementations **MUST NOT** reserve names speculatively or apply future standardized semantics to existing versions.
 
 Timestamps **MUST** include an explicit UTC offset (`Z` or `±HH:MM`). Their lexical interpretation follows [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339). Producers **SHOULD** write UTC (`Z`).
 
@@ -97,7 +110,7 @@ An HTMD logical identifier is an absolute URI with a scheme from the following s
 | `skill` | Registered skill descriptor | `skill://research/core` |
 | `tool` | Registered runtime capability | `tool://browser/search` |
 
-These are **application-private logical URI conventions**, not claims of IANA scheme registration or global DNS ownership. They use the generic URI shape of RFC 3986; **HTMD 0.1 additionally requires** lowercase schemes, a nonempty ASCII lowercase authority matching `[a-z0-9][a-z0-9.-]*`, and zero or more slash-separated nonempty path segments formed only from ASCII letters, digits, `_`, `-`, `.`, `~`, and valid percent encodings. Query strings, fragments, ports, credentials, empty segments, `.` and `..` segments are **not** part of 0.1 logical IDs. Percent-encoded bytes MUST decode to valid UTF-8 and MUST NOT decode to `/`, `\`, NUL, or a control character. Canonical producers SHOULD use uppercase hex in escapes and avoid percent encoding unreserved characters. Equality compares scheme and authority case-insensitively, path case-sensitively, after decoding only percent-encoded unreserved ASCII characters.
+These are **application-private logical URI conventions**, not claims of IANA scheme registration or global DNS ownership. They use the generic URI shape of RFC 3986; **HTMD additionally requires** lowercase schemes, a nonempty ASCII lowercase authority matching `[a-z0-9][a-z0-9.-]*`, and zero or more slash-separated nonempty path segments formed only from ASCII letters, digits, `_`, `-`, `.`, `~`, and valid percent encodings. Query strings, fragments, ports, credentials, empty segments, `.` and `..` segments are **not** part of logical IDs. Percent-encoded bytes MUST decode to valid UTF-8 and MUST NOT decode to `/`, `\`, NUL, or a control character. Canonical producers SHOULD use uppercase hex in escapes and avoid percent encoding unreserved characters. Equality compares scheme and authority case-insensitively, path case-sensitively, after decoding only percent-encoded unreserved ASCII characters.
 
 The root `res://examples` is valid. `res://examples/device` and `res://examples/Device` are distinct. A workspace name in frontmatter is descriptive; it does not rewrite the identifier namespace. A producer **SHOULD** use stable identifiers; changing the document path **MUST NOT** change its identifier.
 
@@ -202,9 +215,9 @@ Views are top-level blocks delimited by exact standalone `<view ...>` and `</vie
 
 ### 7.1 Allowed markup
 
-A View renderer MUST parse fragment content with a maintained HTML parser and apply an allowlist. Allowed elements in 0.1 are `div`, `section`, `article`, `header`, `footer`, `p`, `span`, `strong`, `em`, `small`, `h1`–`h6`, `ul`, `ol`, `li`, `a`, `button`, `code`, `pre`, and `hr` (void). Allowed attributes are `class`, `title`, `aria-label`, `role` on those elements, `href` on `a`, and `data-action` + `data-ref` on `button`. `id` is not allowed inside the fragment in v0.1, to prevent collisions; it is available on the outer `<view>` only. All URLs on `a` MUST use `https:` or a relative local path accepted by the host; `javascript:`, `data:`, `file:`, and protocol-relative URLs are prohibited. `a` is ordinary navigation, not a privileged runtime action.
+A View renderer MUST parse fragment content with a maintained HTML parser and apply an allowlist. Allowed elements in both versions are `div`, `section`, `article`, `header`, `footer`, `p`, `span`, `strong`, `em`, `small`, `h1`–`h6`, `ul`, `ol`, `li`, `a`, `button`, `code`, `pre`, and `hr` (void). Allowed attributes are `class`, `title`, `aria-label`, `role` on those elements, `href` on `a`, and `data-action` + `data-ref` on `button`. `id` is not allowed inside the fragment, to prevent collisions; it is available on the outer `<view>` only. All URLs on `a` MUST use `https:` or a relative local path accepted by the host; `javascript:`, `data:`, `file:`, and protocol-relative URLs are prohibited. `a` is ordinary navigation, not a privileged runtime action.
 
-The only built-in interactive behavior is `<button data-action="open" data-ref="...">`, where `data-ref` is a valid `res:` or `mem:` ID. It asks the host to **navigate**, subject to permissions. All other buttons are inert. Action names other than `open` are invalid under HTMD-View 0.1. Views do not support form submissions, arbitrary JavaScript, CSS properties, expressions, media embeds, SVG/MathML, or network requests.
+The only built-in interactive behavior is `<button data-action="open" data-ref="...">`, where `data-ref` is a valid `res:` or `mem:` ID. It asks the host to **navigate**, subject to permissions. All other buttons are inert. Action names other than `open` are invalid under HTMD-View 0.1 and 0.2. Views do not support form submissions, arbitrary JavaScript, CSS properties, expressions, media embeds, SVG/MathML, or network requests.
 
 Disallowed elements or attributes are invalid in the View profile and **MUST NOT** be handed to a browser as active markup. Renderers **MAY** replace invalid views with an inert error placeholder. Views from untrusted sources MUST also be treated as untrusted HTML and sanitized on final rendering; syntax validation does not replace sanitizer maintenance or correct output encoding.
 
@@ -230,13 +243,13 @@ HTMD is **not** a templating language. No tag, reference, metadata value, or Mar
 
 A parsed document exposes:
 
-- `version` (`"0.1"`), metadata, and ordered content blocks;
+- effective `version` (`"0.1"` or `"0.2"`), metadata, and ordered content blocks;
 - references of kind `context`, `skill`, `tool`, `resource`, and `link`, each retaining its literal identifier and source span;
 - relations with literal source, predicate, target, status, and optional evidence;
 - optional opaque or validated view blocks;
 - diagnostics with stable error codes and source locations.
 
-The **exact parser AST is implementation-defined**. For cross-process interchange, the optional JSON format in [`schemas/htmd-ir.schema.json`](schemas/htmd-ir.schema.json) standardizes the extracted semantic projection, **not** a lossless AST. Source bytes remain the authoritative representation. Implementations MUST NOT reconstruct an event record from a lossy projection and overwrite the original.
+The **exact parser AST is implementation-defined**. For cross-process interchange, the optional JSON format in [`schemas/htmd-ir.schema.json`](schemas/htmd-ir.schema.json) standardizes the extracted semantic projection, **not** a lossless AST. The projection’s top-level `htmd` **MUST** equal `metadata.htmd`, and its metadata map **MUST** retain every custom key and value. Source bytes remain the authoritative representation. Implementations MUST NOT reconstruct an event record from a lossy projection and overwrite the original.
 
 ### 8.2 Error handling
 
@@ -292,9 +305,9 @@ Conformance cases in [`conformance/cases.json`](conformance/cases.json) are **no
 
 ## 12. Extension and versioning policy
 
-v0.1 assigns semantic meaning only to the elements and attributes listed here. Other standalone HTML tags retain CommonMark behavior and never gain implicit semantic meaning. Extensions MUST be explicitly opt-in and SHOULD use `x-` metadata, not overload known semantics. Breaking syntax/semantics requires a new declared `htmd` version. The canonical source version string is `"0.1"`; repository draft revision numbers (e.g., `0.1.0-draft`) are not file grammar versions.
+Versions 0.1 and 0.2 assign semantic meaning only to the elements and attributes listed here. Other standalone HTML tags retain CommonMark behavior and never gain implicit semantic meaning. Semantic extensions MUST be explicitly opt-in and MUST NOT overload known semantics. Passive custom metadata is allowed as described in §3.1 and does not opt into executable or parser extensions. Breaking syntax/semantics requires a new declared `htmd` version. The supported source version strings are `"0.1"` and `"0.2"`; repository draft revision numbers (e.g., `0.2.0-draft`) are not file grammar versions.
 
-New relation names are allowed without a grammar revision because their meaning is application-defined; a consumer MUST preserve but MUST NOT fabricate semantics for unknown predicates. New document types, elements, and attributes are **not** implicitly forward compatible in Core 0.1.
+New relation names are allowed without a grammar revision because their meaning is application-defined; a consumer MUST preserve but MUST NOT fabricate semantics for unknown predicates. New document types, elements, and attributes are **not** implicitly forward compatible in Core 0.1 or 0.2.
 
 ## 13. External normative references
 

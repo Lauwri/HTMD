@@ -386,5 +386,536 @@
     "source": "<view>\n  <a href=\"javascript:alert(1)\">Bad</a>\n</view>\n",
     "valid": false,
     "error": "E_VIEW"
+  },
+  {
+    "id": "core-relation-0.2",
+    "profile": "core",
+    "description": "A document owns its outbound relation (0.2)",
+    "source": "---\nhtmd: \"0.2\"\nid: \"res://examples/device\"\ntype: \"component\"\n---\n\n# Device\n\n<relation type=\"contains\" to=\"res://examples/sensor\" />\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.2",
+        "type": "component",
+        "id": "res://examples/device"
+      },
+      "references": [],
+      "relations": [
+        {
+          "from": "res://examples/device",
+          "type": "contains",
+          "to": "res://examples/sensor",
+          "status": "asserted",
+          "line": 9
+        }
+      ]
+    }
+  },
+  {
+    "id": "core-multiline-0.2",
+    "profile": "core",
+    "description": "Multiline directive attributes (0.2)",
+    "source": "---\nhtmd: \"0.2\"\nid: \"res://examples/controller\"\n---\n\n<relation\n  type=\"reports-to\"\n  to=\"res://examples/sensor\"\n  status=\"inferred\"\n/>\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.2",
+        "type": "note",
+        "id": "res://examples/controller"
+      },
+      "references": [],
+      "relations": [
+        {
+          "from": "res://examples/controller",
+          "type": "reports-to",
+          "to": "res://examples/sensor",
+          "status": "inferred",
+          "line": 6
+        }
+      ]
+    }
+  },
+  {
+    "id": "core-fact-0.2",
+    "profile": "core",
+    "description": "Facts need evidence (0.2)",
+    "source": "---\nhtmd: \"0.2\"\nid: \"mem://facts/one\"\ntype: \"fact\"\nevidence:\n  - \"res://documents/report\"\n---\n\nA sourced assertion.\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.2",
+        "type": "fact",
+        "id": "mem://facts/one",
+        "evidence": [
+          "res://documents/report"
+        ]
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "core-event-0.2",
+    "profile": "core",
+    "description": "Historical event with timestamps (0.2)",
+    "source": "---\nhtmd: \"0.2\"\nid: \"mem://events/one\"\ntype: \"event\"\nactor: \"res://actors/owner\"\noccurred_at: \"2026-11-14T08:00:00Z\"\nrecorded_at: \"2026-11-14T08:01:00Z\"\n---\n\nAn event.\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.2",
+        "type": "event",
+        "id": "mem://events/one",
+        "actor": "res://actors/owner",
+        "occurred_at": "2026-11-14T08:00:00Z",
+        "recorded_at": "2026-11-14T08:01:00Z"
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "core-correction-0.2",
+    "profile": "core",
+    "description": "Correction points to prior event (0.2)",
+    "source": "---\nhtmd: \"0.2\"\nid: \"mem://events/two\"\ntype: \"event\"\nactor: \"res://actors/owner\"\noccurred_at: \"2026-11-14T09:00:00Z\"\nrecorded_at: \"2026-11-14T09:00:05Z\"\ncorrects: \"mem://events/one\"\n---\n\nCorrection.\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.2",
+        "type": "event",
+        "id": "mem://events/two",
+        "actor": "res://actors/owner",
+        "occurred_at": "2026-11-14T09:00:00Z",
+        "recorded_at": "2026-11-14T09:00:05Z",
+        "corrects": "mem://events/one"
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "core-unknown-relation-0.2",
+    "profile": "core",
+    "description": "Unknown relation predicate is preserved (0.2)",
+    "source": "---\nhtmd: \"0.2\"\nid: \"res://examples/device\"\n---\n<relation type=\"mounted-next-to\" to=\"res://examples/controller\" />\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.2",
+        "type": "note",
+        "id": "res://examples/device"
+      },
+      "references": [],
+      "relations": [
+        {
+          "from": "res://examples/device",
+          "type": "mounted-next-to",
+          "to": "res://examples/controller",
+          "status": "asserted",
+          "line": 5
+        }
+      ]
+    }
+  },
+  {
+    "id": "metadata-0.1-extensions",
+    "profile": "core",
+    "description": "Existing x-* strings and arrays remain passive",
+    "source": "---\nhtmd: \"0.1\"\nx-name: \"device\"\nx-tags:\n  - \"one\"\n  - \"two\"\nx-: \"legacy key\"\n---\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "note",
+        "x-name": "device",
+        "x-tags": [
+          "one",
+          "two"
+        ],
+        "x-": "legacy key"
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "metadata-0.1-organization",
+    "profile": "core",
+    "description": "Organization labels are descriptive",
+    "source": "---\nhtmd: \"0.1\"\nworkspace: \"lab\"\nproject: \"inventory\"\n---\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.1",
+        "type": "note",
+        "workspace": "lab",
+        "project": "inventory"
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "metadata-0.1-duplicate-reserved",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.1\"\ntitle: \"one\"\ntitle: \"two\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-duplicate-extension",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.1\"\nx-tags: \"one\"\nx-tags: \"two\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-nested-map",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.1\"\nx-data:\n  nested: \"no\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-flow-array",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.1\"\nx-data: [\"one\", \"two\"]\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-bad-array-indent",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.1\"\nx-data:\n - \"one\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-nested-array",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.1\"\nx-data:\n  - [\"one\"]\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-empty-array",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.1\"\nx-data:\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-boolean",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.1\"\nx-data: true\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-number",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.1\"\nx-data: 42\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-null",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.1\"\nx-data: null\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-reserved-array",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.1\"\ntitle:\n  - \"invalid\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-evidence-string",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.1\"\nevidence: \"res://docs/report\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-invalid-key",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.1\"\nBad-key: \"invalid\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-fact-evidence",
+    "profile": "core",
+    "description": "Facts still require evidence",
+    "source": "---\nhtmd: \"0.1\"\nid: \"mem://facts/one\"\ntype: \"fact\"\n---\n",
+    "valid": false,
+    "error": "E_TYPE"
+  },
+  {
+    "id": "metadata-0.2-extensions",
+    "profile": "core",
+    "description": "Existing x-* strings and arrays remain passive",
+    "source": "---\nhtmd: \"0.2\"\nx-name: \"device\"\nx-tags:\n  - \"one\"\n  - \"two\"\nx-: \"legacy key\"\n---\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.2",
+        "type": "note",
+        "x-name": "device",
+        "x-tags": [
+          "one",
+          "two"
+        ],
+        "x-": "legacy key"
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "metadata-0.2-organization",
+    "profile": "core",
+    "description": "Organization labels are descriptive",
+    "source": "---\nhtmd: \"0.2\"\nworkspace: \"lab\"\nproject: \"inventory\"\n---\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.2",
+        "type": "note",
+        "workspace": "lab",
+        "project": "inventory"
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "metadata-0.2-duplicate-reserved",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.2\"\ntitle: \"one\"\ntitle: \"two\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-duplicate-extension",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.2\"\nx-tags: \"one\"\nx-tags: \"two\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-nested-map",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.2\"\nx-data:\n  nested: \"no\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-flow-array",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.2\"\nx-data: [\"one\", \"two\"]\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-bad-array-indent",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.2\"\nx-data:\n - \"one\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-nested-array",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.2\"\nx-data:\n  - [\"one\"]\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-empty-array",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.2\"\nx-data:\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-boolean",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.2\"\nx-data: true\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-number",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.2\"\nx-data: 42\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-null",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.2\"\nx-data: null\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-reserved-array",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.2\"\ntitle:\n  - \"invalid\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-evidence-string",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.2\"\nevidence: \"res://docs/report\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-invalid-key",
+    "profile": "core",
+    "description": "Restricted metadata grammar remains enforced",
+    "source": "---\nhtmd: \"0.2\"\nBad-key: \"invalid\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-fact-evidence",
+    "profile": "core",
+    "description": "Facts still require evidence",
+    "source": "---\nhtmd: \"0.2\"\nid: \"mem://facts/one\"\ntype: \"fact\"\n---\n",
+    "valid": false,
+    "error": "E_TYPE"
+  },
+  {
+    "id": "metadata-0.2-custom",
+    "profile": "core",
+    "description": "Multiple custom string arrays, even before version declaration",
+    "source": "---\nmanufacturer: \"Example Electronics\"\nlocation: \"building-a\"\npriority: \"high\"\ntags:\n  - \"hardware\"\n  - \"temperature\"\nowners:\n  - \"operations\"\nworkspace:\n  - \"lab\"\nproject:\n  - \"inventory\"\nhtmd: \"0.2\"\n---\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.2",
+        "type": "note",
+        "manufacturer": "Example Electronics",
+        "location": "building-a",
+        "priority": "high",
+        "tags": [
+          "hardware",
+          "temperature"
+        ],
+        "owners": [
+          "operations"
+        ],
+        "workspace": [
+          "lab"
+        ],
+        "project": [
+          "inventory"
+        ]
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "metadata-0.2-inert",
+    "profile": "core",
+    "description": "HTML, expressions and tool references in metadata are only strings",
+    "source": "---\nhtmd: \"0.2\"\nhtml: \"<script>alert(1)</script>\"\ntool: \"tool://browser/search\"\nexpression: \"${run()}\"\nreference: \"[[res://private/secret]]\"\npermissions:\n  - \"admin\"\n---\n",
+    "valid": true,
+    "expected": {
+      "metadata": {
+        "htmd": "0.2",
+        "type": "note",
+        "html": "<script>alert(1)</script>",
+        "tool": "tool://browser/search",
+        "expression": "${run()}",
+        "reference": "[[res://private/secret]]",
+        "permissions": [
+          "admin"
+        ]
+      },
+      "references": [],
+      "relations": []
+    }
+  },
+  {
+    "id": "metadata-0.1-custom",
+    "profile": "core",
+    "description": "0.1 retains its original metadata restrictions",
+    "source": "---\nmanufacturer: \"Example Electronics\"\nhtmd: \"0.1\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-workspace-array",
+    "profile": "core",
+    "description": "0.1 retains its original metadata restrictions",
+    "source": "---\nworkspace:\n  - \"lab\"\nhtmd: \"0.1\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.1-project-array",
+    "profile": "core",
+    "description": "0.1 retains its original metadata restrictions",
+    "source": "---\nproject:\n  - \"inventory\"\nhtmd: \"0.1\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-0.2-duplicate-custom",
+    "profile": "core",
+    "description": "Custom key duplicates are rejected",
+    "source": "---\nhtmd: \"0.2\"\npriority: \"high\"\npriority: \"low\"\n---\n",
+    "valid": false,
+    "error": "E_FRONTMATTER"
+  },
+  {
+    "id": "metadata-missing-version",
+    "profile": "core",
+    "description": "Custom fields cannot imply a language version",
+    "source": "---\npriority: \"high\"\n---\n",
+    "valid": false,
+    "error": "E_VERSION"
+  },
+  {
+    "id": "metadata-unsupported-version",
+    "profile": "core",
+    "description": "Custom fields cannot select a supported fallback",
+    "source": "---\npriority: \"high\"\nhtmd: \"0.3\"\n---\n",
+    "valid": false,
+    "error": "E_VERSION"
   }
 ]

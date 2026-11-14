@@ -7,7 +7,7 @@ For normative requirements see [SPECIFICATION.md](../SPECIFICATION.md). This is 
 | Form | Example | Meaning |
 | --- | --- | --- |
 | Markdown | `# Heading` | Content, CommonMark 0.31.2 |
-| Frontmatter | `htmd: "0.1"` | Document version and metadata |
+| Frontmatter | `htmd: "0.2"` | Document version and metadata |
 | Graph link | `[[res://examples/device]]` | Link to an entity |
 | Context | `<context ref="mem://user/preferences" />` | Declare context dependency |
 | Skill | `<skill ref="skill://research/core" />` | Refer to skill descriptor |
@@ -23,15 +23,21 @@ For normative requirements see [SPECIFICATION.md](../SPECIFICATION.md). This is 
 
 ```yaml
 ---
-htmd: "0.1"
+htmd: "0.2"
 id: "res://examples/device"
 type: "component"
 title: "Device assembly"
+manufacturer: "Example Electronics"
 workspace: "example-workspace"
+tags:
+  - "hardware"
+  - "inventory"
 ---
 ```
 
-Only double-quoted scalar strings and lists of double-quoted strings are allowed. Duplicate keys, YAML anchors/aliases, implicit numbers/booleans, and nested maps are not. Every declared frontmatter block needs `htmd: "0.1"`.
+Only double-quoted scalar strings and lists of double-quoted strings are allowed. Duplicate keys, YAML anchors/aliases, implicit numbers/booleans, and nested maps are not. Every declared frontmatter block needs a supported version (`"0.1"` or `"0.2"`). In 0.2, custom keys need no prefix; `workspace` and `project` are custom fields. In 0.1, unknown keys still require `x-`, and `workspace`/`project` remain string-only.
+
+Reserved fields are `htmd`, `id`, `type`, `title`, `actor`, `occurred_at`, `recorded_at`, `evidence`, and `corrects`. Their validation cannot be overridden by custom metadata. See [metadata rules](../SPECIFICATION.md#31-metadata-grammar-and-constraints) for the complete grammar and version rules. Custom values never grant permissions or create semantic references.
 
 ## Types and required metadata
 

@@ -2,6 +2,23 @@
 
 All notable specification revisions are recorded here. Dates use ISO 8601.
 
+## [0.2.0-draft] — 2026-11-14
+
+- Generalized metadata: custom lowercase keys no longer require `x-`; `workspace` and `project` are ordinary custom fields.
+- Retained only universal reserved fields, with unchanged type, identity, evidence, and event validation.
+- Added centralized version-aware metadata validation for 0.1/0.2 and preserved the implicit 0.1 default.
+- Preserved custom strings/string arrays and the effective version in JSON projections; updated the version-aware schema.
+- Expanded conformance vectors, schema checks, and regression tests for inert metadata, rendering, and authorization.
+- Updated examples, metadata documentation, and migration guidance. No new dependencies or executable syntax.
+
+## [Unreleased] — experimental Python parser and renderer
+
+- Added installable `htmd-language` alpha package with Core and View parsers.
+- Added safe static HTML renderer, read-only policy-gated resolver and CLI commands.
+- Added conformance, negative-case, security, and CLI tests running in GitHub Actions.
+- Fixed GitHub Actions workflow placement under `.github/workflows` in the distribution.
+- No intended changes to HTMD 0.1 normative syntax.
+
 ## [Unreleased] — editorial revision
 
 - Removed implementation-specific branding and references from documentation.

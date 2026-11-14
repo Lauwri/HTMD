@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "HTMD 0.1 semantic projection (draft)",
+  "title": "HTMD 0.1/0.2 semantic projection (draft)",
   "description": "Lossy extracted metadata, references and directed relations. Not a full syntax tree.",
   "type": "object",
   "additionalProperties": false,
@@ -12,7 +12,10 @@
   ],
   "properties": {
     "htmd": {
-      "const": "0.1"
+      "enum": [
+        "0.1",
+        "0.2"
+      ]
     },
     "metadata": {
       "type": "object",
@@ -20,25 +23,15 @@
         "htmd",
         "type"
       ],
-      "patternProperties": {
-        "^x-[a-z0-9_-]+$": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          ]
-        }
+      "additionalProperties": {
+        "$ref": "#/$defs/metadataValue"
       },
-      "additionalProperties": false,
       "properties": {
         "htmd": {
-          "const": "0.1"
+          "enum": [
+            "0.1",
+            "0.2"
+          ]
         },
         "id": {
           "type": "string",
@@ -57,12 +50,6 @@
           ]
         },
         "title": {
-          "type": "string"
-        },
-        "workspace": {
-          "type": "string"
-        },
-        "project": {
           "type": "string"
         },
         "actor": {
@@ -135,8 +122,55 @@
               "id"
             ]
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "htmd": {
+                "const": "0.1"
+              }
+            }
+          },
+          "then": {
+            "propertyNames": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "htmd",
+                    "id",
+                    "type",
+                    "title",
+                    "workspace",
+                    "project",
+                    "actor",
+                    "occurred_at",
+                    "recorded_at",
+                    "evidence",
+                    "corrects"
+                  ]
+                },
+                {
+                  "pattern": "^x-[a-z0-9_-]*$"
+                }
+              ]
+            },
+            "properties": {
+              "workspace": {
+                "type": "string"
+              },
+              "project": {
+                "type": "string"
+              }
+            }
+          }
         }
-      ]
+      ],
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_-]*$",
+        "not": {
+          "pattern": "[^a-z0-9_-]"
+        }
+      }
     },
     "references": {
       "type": "array",
@@ -221,5 +255,63 @@
         }
       }
     }
-  }
+  },
+  "$defs": {
+    "metadataValue": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "htmd": {
+            "const": "0.1"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "metadata": {
+            "properties": {
+              "htmd": {
+                "const": "0.1"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "htmd": {
+            "const": "0.2"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "metadata": {
+            "properties": {
+              "htmd": {
+                "const": "0.2"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

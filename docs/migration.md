@@ -1,4 +1,14 @@
-# Migration from Markdown and HTML
+# Migration from HTMD 0.1, Markdown and HTML
+
+## HTMD 0.1 to 0.2
+
+Existing valid 0.1 documents remain supported with their original validation. To use custom keys such as `manufacturer` or `tags`, declare `htmd: "0.2"`. No metadata renaming is required: existing `x-*` keys remain valid, and `workspace`/`project` strings remain valid custom values. In 0.2 those two fields can also contain string arrays.
+
+Do not automatically strip `x-` prefixes: an application may rely on those exact names, and renaming could collide with another field or a reserved name. Reserved-field types, required evidence/event fields, identifiers, body syntax, and trust boundaries are unchanged. See [the normative metadata rules](../SPECIFICATION.md#31-metadata-grammar-and-constraints).
+
+A 0.1-only reader cannot read an explicitly declared 0.2 file and should report `E_VERSION`. Downgrading requires validating every custom name and value against 0.1 rules; merely changing the version can make the file invalid. Missing frontmatter continues to imply 0.1, and invalid 0.1 input is never upgraded implicitly.
+
+Do not rewrite immutable event records to change their language version; preserve the original bytes and use the store’s correction/revision policy. This release adds no executable expressions, implicit scalar coercion, or nested metadata objects.
 
 ## Markdown to HTMD
 
@@ -15,7 +25,7 @@ See the sensor documentation.
 
 ```htmd
 ---
-htmd: "0.1"
+htmd: "0.2"
 id: "res://examples/device"
 type: "component"
 ---

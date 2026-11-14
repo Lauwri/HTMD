@@ -67,8 +67,8 @@ def check_frontmatter(filename: Path, contents: str) -> None:
             meta[key] = value
         except (ValueError, json.JSONDecodeError):
             report(str(filename), f"unquoted/invalid scalar at line {lineno}")
-    if meta.get("htmd") != "0.1":
-        report(str(filename), "declared HTMD version is missing or not 0.1")
+    if meta.get("htmd") not in ("0.1", "0.2"):
+        report(str(filename), "declared HTMD version is missing or unsupported")
     if meta.get("type") == "fact" and not meta.get("evidence"):
         report(str(filename), "fact must have nonempty evidence")
     if meta.get("type") == "event":
@@ -121,7 +121,7 @@ def check_fixtures() -> None:
             for key in ("metadata", "references", "relations"):
                 if key not in expected:
                     report(ident, f"missing expected.{key}")
-            if expected.get("metadata", {}).get("htmd") != "0.1":
+            if expected.get("metadata", {}).get("htmd") not in ("0.1", "0.2"):
                 report(ident, "invalid effective metadata version")
             for ref in expected.get("references", []):
                 line = ref.get("line", 0)

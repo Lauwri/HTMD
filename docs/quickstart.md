@@ -13,7 +13,7 @@ Create `notes.htmd`:
 - Knowledge can refer to [[res://examples/device|the device assembly]].
 ```
 
-Without frontmatter, this is an anonymous document of type `note`.
+Without frontmatter, this is an anonymous document of type `note`, with implicit language version 0.1 for compatibility.
 
 ## 2. Give an entity an identity
 
@@ -21,10 +21,14 @@ Create `device.htmd`:
 
 ```htmd
 ---
-htmd: "0.1"
+htmd: "0.2"
 id: "res://examples/device"
 type: "component"
 title: "Device assembly"
+manufacturer: "Example Electronics"
+tags:
+  - "hardware"
+  - "inventory"
 ---
 
 # Device assembly
@@ -33,6 +37,8 @@ A device containing a replaceable sensor module.
 
 <relation type="contains" to="res://examples/sensor" />
 ```
+
+In 0.2, `manufacturer` and `tags` are custom metadata; no `x-` prefix is needed. Use double-quoted strings or nonempty block lists of strings. These values do not grant permissions or change resource resolution. Existing 0.1 files remain supported under their original rules; see [migration](migration.md#htmd-01-to-02).
 
 The document can now be relocated without changing the graph identity `res://examples/device`. The `contains` relation points **outward** from that ID; it does not infer an inverse relation.
 
@@ -65,7 +71,7 @@ Create an `event` document with an immutable ID and explicit timestamps:
 
 ```htmd
 ---
-htmd: "0.1"
+htmd: "0.2"
 id: "mem://events/2026-11-14-device-test"
 type: "event"
 actor: "res://actors/operator"

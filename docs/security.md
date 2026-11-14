@@ -19,11 +19,15 @@
 | Imported remote text | Parsed as inert data | No | No, unless an authorized ingest service records it |
 | Authorized runtime | Resolves references | Enforces grants | Enforces append-only rules |
 
+## Custom metadata
+
+HTMD 0.2 custom keys are data, even when named `permissions`, `tool`, `src`, `profile`, or `workspace`. They cannot grant access, change parsing modes, create references, rewrite identifier namespaces, or trigger retrieval. Script-like values and expressions are preserved as strings and never evaluated. If a host displays custom values, it must encode them as text. Application-specific processing requires explicit host policy separate from document content; see [metadata semantics](../SPECIFICATION.md#31-metadata-grammar-and-constraints).
+
 ## HTML rendering policy
 
 HTMD-View forbids `script`, `iframe`, `svg`, `math`, `style`, event handler attributes, arbitrary `data-*` attributes, and form submissions. Never rely on the mere presence of an allowlist in a text specification to make a raw browser HTML string safe. Validate and sanitize at the final rendering boundary, and patch sanitizer dependencies.
 
-Only the `data-action="open"` + `data-ref="res://..."` navigation pattern is defined in v0.1; it does not invoke network requests, file writes, or tools. `href` on links only permits HTTPS or host-approved safe local relative paths.
+Only the `data-action="open"` + `data-ref="res://..."` navigation pattern is defined in both 0.1 and 0.2; it does not invoke network requests, file writes, or tools. `href` on links only permits HTTPS or host-approved safe local relative paths.
 
 ## Files and identifiers
 

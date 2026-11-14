@@ -1,8 +1,18 @@
 ---
-htmd: "0.1"
+htmd: "0.2"
 id: "res://examples/sensor"
 type: "component"
 title: "Sensor module"
+manufacturer: "Example Electronics"
+location: "building-a"
+priority: "high"
+workspace: "example-workspace"
+project: "device-inventory"
+tags:
+  - "hardware"
+  - "temperature"
+owners:
+  - "operations"
 ---
 
 # Sensor module

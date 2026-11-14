@@ -24,6 +24,10 @@ It can preserve them as inert content or show an escaped source preview. Only a 
 
 Unrestricted YAML includes implicit types, nested structures and alias behavior that add interoperability and security complexity. A narrow string-only subset is easier to implement deterministically.
 
+### Can I add custom metadata?
+
+Yes. Declare `htmd: "0.2"` and use valid lowercase keys with string or string-array values; no `x-` prefix is needed. `workspace` and `project` are ordinary custom fields. Reserved fields keep their defined validation, and custom metadata never grants authority. Version 0.1 retains its original restrictions. See [migration](migration.md#htmd-01-to-02).
+
 ### Can an application revise stored records?
 
 Mutable knowledge can be revised according to store policy. Historical `event` records must be append-only under an event-integrity store; corrections become new linked records. HTMD syntax alone cannot enforce disk immutability.

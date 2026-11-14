@@ -18,6 +18,12 @@ Source record: res://examples/sensor
 
 The index can answer questions such as *which components are inside the device?* without loading entire project folders. It cannot silently assume the inverse of `contains`, that the sensor exists, or that a hypothetical dependency is confirmed.
 
+## Metadata and application organization
+
+The [reserved fields](../SPECIFICATION.md#31-metadata-grammar-and-constraints) describe language version, identity, type, title, attribution, time, evidence, and corrections. HTMD 0.2 leaves application organization to custom fields: `workspace`, `project`, `manufacturer`, `location`, and `tags` have no built-in graph or authorization semantics.
+
+The semantic JSON projection retains all metadata values and uses the effective language version at both `htmd` and `metadata.htmd`. Custom values remain strings or string arrays, never nested records or automatically extracted edges. Applications can build their own indexes from these values without changing logical identity or the meaning of standard relations.
+
 ## Fact, hypothesis, thought and event
 
 | Category | Interpretation | Requirements |
@@ -45,7 +51,7 @@ A history-aware client should distinguish **what was recorded** from **what curr
 
 - `occurred_at` means when an event reportedly took place.
 - `recorded_at` means when the event was recorded; it is not necessarily when every device synchronized the record.
-- `htmd: "0.1"` means the syntax version, not a document version.
+- `htmd: "0.2"` (or `"0.1"`) means the syntax version, not a document version.
 - A store may assign revisions or hashes out of band; such metadata must not change the original event bytes.
 - Different devices may have different local replicas while offline. A new revision is not necessarily more truthful solely because it was synchronized later.
 

@@ -13,18 +13,24 @@ Status denotes planning, not completed functionality.
 - [x] Human examples and test vectors
 - [ ] Public review and draft issue resolution
 
-## 0.1 implementation phase (not delivered here)
+## 0.1 implementation phase (experimental Python implementation)
 
-- [ ] Conforming parser with CommonMark-aware tokenization
+- [x] Alpha Core parser with CommonMark-aware tokenization (full CommonMark conformance not separately certified)
 - [ ] Cross-language parser implementations / SDKs
-- [ ] Reference View sanitizer and native renderer
-- [ ] Automated conformance runner for parser CLI
-- [ ] Schema-backed semantic projection producer
+- [x] Initial View allowlist validator and static HTML renderer (no host UI events)
+- [x] Automated conformance tests and CLI regression tests
+- [x] Schema-backed semantic projection producer
 - [ ] End-to-end fuzz and injection tests
-- [ ] Offline resolver, graph index and event-integrity store
+- [ ] Persistent graph index and event-integrity store (basic in-memory resolver exists)
 - [ ] Integration examples for independent host implementations
 
-## Candidate future features (not specified by 0.1)
+## 0.2 draft — extensible metadata
+
+- [x] Application-independent reserved fields and passive custom metadata
+- [x] Version-aware parser and semantic projection schema with 0.1 compatibility
+- [x] Metadata conformance vectors, runtime regressions, and migration guidance
+
+## Candidate future features (not specified by 0.1 or 0.2)
 
 - Namespaced extension registry and profile negotiation
 - Exact structured query syntax for selective context retrieval

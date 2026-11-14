@@ -15,6 +15,10 @@ UTF-8 bytes
               └─ Markdown AST text nodes: optional [[id|label]] links
 ```
 
+### Frontmatter selection
+
+Read the restricted mapping before selecting the declared version; `htmd` need not be the first key. Both versions use the same string/string-array syntax and reject duplicates and nested structures. Version 0.2 permits arbitrary well-formed custom keys, while 0.1 retains its legacy key restrictions. No frontmatter still means 0.1. Missing or unsupported declarations produce `E_VERSION`; do not retry malformed 0.1 input under 0.2. The normative details are in [§3.1](../SPECIFICATION.md#31-metadata-grammar-and-constraints).
+
 ### Semantic token surface
 
 ```text
